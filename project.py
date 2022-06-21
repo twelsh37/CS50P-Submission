@@ -48,7 +48,7 @@ def main():
         hashed_passwords,
         "Data Explorer",
         "abcdef",
-        cookie_expiry_days=2,
+        cookie_expiry_days=0,
     )
 
     # From Streamlit login form store our input in variables
@@ -61,7 +61,14 @@ def main():
         st.warning("Please enter your username and password")
 
     if authentication_status:
-        st.header('WE ARE IN')
+        st.header('Data Explorer')
+        st.subheader('Lets play with some data')
+        st.markdown('---')
+
+    #--- SIDEBAR ---#
+    authenticator.logout("Logout", "sidebar")
+
+    st.sidebar.header('Options')
 
 if __name__ == '__main__':
     main()
