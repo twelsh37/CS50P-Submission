@@ -11,12 +11,11 @@ This file tests the fumctions from project.py
 '''
 
 import pytest
-from project import create_user
-from project import read_user
-from project import update_user
-from project import del_user
-from project import fetch_all_users
-
+from detabase import create_user
+from detabase import read_user
+from detabase import update_user
+from detabase import del_user
+from detabase import fetch_all_users
 
 # Catch TypeError
 def test_create_user_typeerror():
