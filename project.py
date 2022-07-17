@@ -56,8 +56,7 @@ def main():
     )
 
     # From Streamlit login form store our input in variables
-    name, authentication_status, username = authenticator.login("main")
-    # name, authentication_status, username = authenticator.login("Login", "main")
+    name, authentication_status, username = authenticator.login("Login", "main")
 
     if authentication_status == False:
         st.error("Username/password is incorrect")
@@ -77,18 +76,26 @@ def main():
     # Definitions for our selectbox in the sidebar
 
     def page_7wonders():
-        st.sidebar.header("7 Wonders of the Ancient World")
+        #st.sidebar.header("7 Wonders of the Ancient World")
+        pass
 
     def page_africanparks():
-        st.sidebar.header("A Selection of African Wildlife Parks")
+        #st.sidebar.header("A Selection of African Wildlife Parks")
+        pass
 
     def page_cities():
-        st.sidebar.header("Top 100 Most Populous Cities")
+        #st.sidebar.header("Top 100 Most Populous Cities")
+        pass
+
+    def page_upload():
+        #st.sidebar.header("Top 100 Most Populous Cities")
+        pass
 
     pages = {
         "7 Wonders Of The World": page_7wonders,
         "African Game Parks": page_africanparks,
-        "Most Populous Cities In The World": page_cities
+        "Most Populous Cities In The World": page_cities,
+        "Uploaded Files": page_upload
     }
 
     # Selectbox for our sidebar
@@ -96,17 +103,15 @@ def main():
     pages[selected_page]()
 
     # Column setup
-    #col1, col2, col3 = st.columns(3)
     col1, col2 = st.columns(2)
 
     # Sidebar setup
     st.sidebar.title('File Upload')
-    upload_file = st.sidebar.file_uploader('Upload a file containing latitude and longitude data')
-
-    # Check if file has been uploaded
+    upload_file = st.sidebar.file_uploader('Upload a file containing latitude and longitude data', type = ['xlsx'])
     if upload_file is not None:
         df_upload = pd.read_excel(upload_file)
         st.map(df_upload)
+
 
     # Select box actions
     if selected_page == "7 Wonders Of The World":
@@ -137,14 +142,6 @@ def main():
             st.plotly_chart(fig, use_container_width=True, width=800, height=600)
         with col2:
             st.header("Mapping Information")
-            hide_dataframe_row_index = """
-            <style>
-            .row_heading.level0 {display:none}
-            .blank {display:none}
-            </style>
-            """
-            st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
-
             st.dataframe(df1)
 
     elif selected_page == "African Game Parks":
@@ -178,10 +175,6 @@ def main():
 
 
     elif selected_page == "Most Populous Cities In The World":
-        # with col1:
-        #     df3 = pd.read_csv('worldcities.csv')
-        #     st.title('100 Of The Worlds Most Populous Cities')
-        #     st.map(df3)
         with col1:
             df3 = pd.read_csv('worldcities.csv')
             st.header("Most Populous Cities In The World")
@@ -211,14 +204,37 @@ def main():
             st.title("Mapping Information")
             st.write(df3.head(7))
 
-    # #--- Ticker Selector
-    #
-    # st.sidebar.title('Ticker Selector')
-    # st.sidebar.form(key = 'ticker_selector')
-    # submitted = st.form_submit_button('Submit')
-    # #st.write(get_data(ticker))
-    # if submitted:
-    #     st.write('Getting our data...')
+
+    elif (selected_page == "Uploaded File") and (upload_file is not None):
+        with col1:
+            df4 = pd.read_excel(df_upload)
+            st.header("Drag and drop file")
+            fig = px.scatter_mapbox(df4,
+                                    lat='latitude',
+                                    lon='longitude',
+                                    color = df4['name'],
+                                    size_max=20,
+                                    width=800,
+                                    height=600,
+                                    custom_data=[df4['name']]
+                                    )
+            # Set the center point of the map and the starting zoom
+            fig.update_mapboxes(center=dict(lat=24, lon=0),
+                                zoom=0.2,
+                                )
+            fig.update_layout(showlegend=False)
+            fig.update_traces(
+                # This removed the colorbar
+                marker_coloraxis=None,
+                hovertemplate='<B>Name: </B>'
+            )
+
+            # Plot!
+            st.plotly_chart(fig, use_container_width=True, width=800, height=600)
+        with col2:
+            st.title("Mapping Information")
+            st.write(df4.head(7))
+
 
     # STICK A LOGOUT BUTTON IN THE SIDEBR
     authenticator.logout("Logout", "sidebar")
