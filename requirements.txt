@@ -1,0 +1,7 @@
+pandas
+streamlit
+streamlit_authenticator
+plotly
+deta
+python-dotenv
+openpyxl
