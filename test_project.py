@@ -11,11 +11,12 @@ This file tests the fumctions from project.py
 '''
 
 import pytest
-from detabase import create_user
-from detabase import read_user
-from detabase import update_user
-from detabase import del_user
-from detabase import fetch_all_users
+from project import create_user
+from project import read_user
+from project import update_user
+from project import del_user
+from project import fetch_all_users
+
 
 # Catch TypeError
 def test_create_user_typeerror():
@@ -45,13 +46,6 @@ def test_read_user_nameeerror():
 
 def test_read_user():
     assert read_user('atest')
-
-##TODO
-# def test_update_user():
-#     if isinstance:
-#         update_user('A Test', atest)
-#     #assert update_user('A real test','atest')
-
 
 def test_del_user_typeerror():
     with pytest.raises(TypeError):

@@ -1,21 +1,35 @@
 # -*- coding: utf-8 -*-
 '''
+Documentation: - Delete when complete
+* Talk to 'Future You' readint the methods and classes 6/8 months from now.
+* Future you has spent those months on 5/6 other projects and cant
+remember any of this.
+* Future you doesn't have time to spend a full day trying to 'get
+into' the code in order to fix a bug / adapt a method.
+* Be Generous to future you, that will be you some day.
+
 DESCRIPTION:
-This is the main file of our Application. From here we run our streamlit app, and from that we are able to launch the
- streamlit application
+
+Feature: #Enter feature name here
+# Enter feature description here
+
+Scenario: #Enter scenario name here
+# Enter steps here
+
+:Author: Tom
+:Created: 17/07/2022
+:Copyright: Tom Welsh - twelsh37@gmail.com
 '''
-# Our imports
 import os
-import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
 import streamlit_authenticator as stauth
 import plotly.express as px
 from deta import Deta
 from dotenv import load_dotenv
-import openpyxl
-#basic housekrrping for the App
-st.set_page_config(page_title="Data Explorer", layout="wide")
+import yaml
+
+# basic housekrrping for the App
+st.set_page_config(page_title="Data Explorer", page_icon="🌎", layout="wide", initial_sidebar_state="collapsed")
 
 # Load our environment files
 load_dotenv(".env")
@@ -35,217 +49,121 @@ deta = Deta(DETA_KEY)
 # Create database connection
 db = deta.Base("users_db")
 
+
 # Our Main function
 def main():
     # --- USER AUTHENTICATION SECTION ---#
-    users = fetch_all_users()
+    # users = fetch_all_users()
+    with open('config.yaml') as file:
+        config = yaml.safe_load(file)
 
-    usernames = [user["key"] for user in users]
-    names = [user["name"] for user in users]
-    hashed_passwords = [user["password"] for user in users]
-
-    # handle Authentication, cookie name, random key and cookie expiry time in days.
-    # If you dont want passwordless reauthentication set it to 0 which will force you to login each time
     authenticator = stauth.Authenticate(
-        names,
-        usernames,
-        hashed_passwords,
-        "Data Explorer",
-        "abcdef",
-        cookie_expiry_days=0,
+        config['credentials'],
+        config['cookie']['name'],
+        config['cookie']['key'],
+        config['cookie']['expiry_days'],
+        config['preauthorized']
     )
 
     # From Streamlit login form store our input in variables
     name, authentication_status, username = authenticator.login("Login", "main")
 
+    # Hide hamburger and sidebar
+    st.markdown("""
+    <style>
+     .e1fb0mya1 {
+            display: none;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # If authentication fails reprompt for Username/password
     if authentication_status == False:
         st.error("Username/password is incorrect")
 
+    # if just hits login ask them to login
     elif authentication_status == None:
         st.warning("Please enter your username and password")
 
+    # if user is authenticated show the app
     elif authentication_status == True:
         st.title('Data Explorer')
-        st.markdown('---')
+        st.markdown('#### Description:')
+        st.markdown('''
+        This is my final project submission for Harvard Universitys CS50P.
+        The application utilises an open-source application framework for building the web application.
+        The application is frontended by a login page where only authorised users can gain access to the main application.
+        The login page is back-ended to the [Deta Base NoSQL database](https://www.deta.sh/), which is used to store our user credentials.
+        When the user gains access to the main application Area they are presented with an opening page displaying a stock ticker for user selectable instraments, Some metric boxes for the associated ticker symbols.
+        There are then other selectable options available in the side bar that will allow the user to display different information.''')
+        st.markdown(' ')
+        st.markdown('### Examples of this kind of data are')
+        st.markdown('''
+        * 7 Wonders of The World
+        * A selection of African Game Parks
+        * The 100 most populous cities on Earth
+                    ''')
+        st.markdown(' ')
+        st.markdown('Below is the data for the 7 wonders of the world which will be plotted on a digital map.')
+        st.markdown('#### The 7 Wonders of the Ancient World')
+        code1 = '''| Name                          | Country 	| Latitude              | Longitude          	|
+|------------------------------	|---------	|--------------------	|--------------------	|
+| Statue of Zeus at Olympia    	| Greece  	| 37.63819915960268  	| 21.63011753949122  	|
+| Temple of Artemis at Ephesus 	| Turkey  	| 37.94967735447476  	| 27.363909843917902 	|
+| Mausoleum at Halicarnassus   	| Turkey  	| 37.03803297044549  	| 27.424116399008735 	|
+| Colossus of Rhodes           	| Turkey  	| 36.45107354911518  	| 28.2257819413324   	|
+| Hanging Gardens of Babylon   	| Iraq    	| 36.57693767402696  	| 41.869210073371086 	|
+| Great Pyramid of Giza        	| Egypt   	| 29.97942034949402  	| 31.134244814303447 	|
+| Lighthouse of Alexandria     	| Egypt   	| 31.214081589823174 	| 29.8855234134948   	|'''
+        st.code(code1, language='text/plain')
+        st.markdown(
+            'Source: https://blog.batchgeo.com/seven-wonders-of-the-world-more-like-46-wonders/ <Accessed 2022-06-08>')
+        st.markdown(' ')
+        st.markdown('### Design Decisions')
+        st.markdown('''Having decided that my project was going to be an gui app of some kind i wanted to use a sutible medium to sisplay this on.
+        A Gui type interface was my first choice.''')
+        st.markdown('I considered the following four libraries for the GUI.')
+        st.markdown('''
+        * Kivy - https://github.com/kivy/kivy - I discarded this as it seemed more focused on multi-touch devices.
+        * Tkinter - https://docs.python.org/3/library/tkinter.html - The grandad of the Python GUI frameworks. This turned out to be hard to test with pytest so I discounted it.
+        * Dash/Plotly - https://plotly.com/dash/ - A modern day gui tool used to build web based applications and dashboards. Integrates well with plotly.I have used it before so discounted as i wanted to learn a new library
+        * Streamlit - https://streamlit.io - Open source application Framework for developing web apps.
 
-    #---SIDEBAR ---#
-    st.sidebar.title('Maps')
-
-    # Functions
-    # for each of the pages
-    # Definitions for our selectbox in the sidebar
-
-    def page_7wonders():
-        #st.sidebar.header("7 Wonders of the Ancient World")
-        pass
-
-    def page_africanparks():
-        #st.sidebar.header("A Selection of African Wildlife Parks")
-        pass
-
-    def page_cities():
-        #st.sidebar.header("Top 100 Most Populous Cities")
-        pass
-
-    def page_upload():
-        #st.sidebar.header("Top 100 Most Populous Cities")
-        pass
-
-    pages = {
-        "7 Wonders Of The World": page_7wonders,
-        "African Game Parks": page_africanparks,
-        "Most Populous Cities In The World": page_cities,
-        "Uploaded Files": page_upload
-    }
-
-    # Selectbox for our sidebar
-    selected_page = st.sidebar.selectbox("Select Page", pages.keys())
-    pages[selected_page]()
-
-    # Column setup
-    col1, col2 = st.columns(2)
-
-    # Sidebar setup
-    st.sidebar.title('File Upload')
-    upload_file = st.sidebar.file_uploader('Upload a file containing latitude and longitude data', type = ['xlsx'])
-    if upload_file is not None:
-        df_upload = pd.read_excel(upload_file)
-        st.map(df_upload)
-
-
-    # Select box actions
-    if selected_page == "7 Wonders Of The World":
-        with col1:
-            df1 = pd.read_csv('7wonders.csv')
-            st.header("7 Wonders Of The World")
-            fig = px.scatter_mapbox(df1,
-                                    lat='latitude',
-                                    lon='longitude',
-                                    color = df1['name'],
-                                    size_max=20,
-                                    width=800,
-                                    height=600,
-                                    custom_data=[df1['name']]
-                                    )
-            # Set the center point of the map and the starting zoom
-            fig.update_mapboxes(center=dict(lat=35, lon=33),
-                                zoom=3.5,
-                                )
-            fig.update_layout(showlegend=False)
-            fig.update_traces(
-                # This removed the colorbar
-                marker_coloraxis=None,
-                hovertemplate='<B>Name: </B>'
-            )
-
-            # Plot!
-            st.plotly_chart(fig, use_container_width=True, width=800, height=600)
-        with col2:
-            st.header("Mapping Information")
-            st.dataframe(df1)
-
-    elif selected_page == "African Game Parks":
-        with col1:
-            df2 = pd.read_csv('africanparks.csv')
-            st.header("A Selection of African Game Parks")
-            fig = px.scatter_mapbox(df2,
-                                    lat='latitude',
-                                    lon='longitude',
-                                    color = df2['name'],
-                                    size_max=20,
-                                    width=800,
-                                    height=600,
-                                    custom_data = [df2['name']]
-                                    )
-            # Set the center point of the map and the starting zoom
-            fig.update_mapboxes(center=dict(lat=4, lon=24),
-                                zoom=1.75,
-                                )
-            fig.update_layout(showlegend=False)
-            fig.update_traces(
-                # This removed the colorbar
-                marker_coloraxis=None,
-                hovertemplate = '<B>Name: </B>'
-            )
-            # Plot!
-            st.plotly_chart(fig, use_container_width=True, width=800, height=600)
-        with col2:
-            st.title("Mapping Information")
-            st.write(df2.head(7))
-
-
-    elif selected_page == "Most Populous Cities In The World":
-        with col1:
-            df3 = pd.read_csv('worldcities.csv')
-            st.header("Most Populous Cities In The World")
-            fig = px.scatter_mapbox(df3,
-                                    lat='latitude',
-                                    lon='longitude',
-                                    color = df3['name'],
-                                    size_max=20,
-                                    width=800,
-                                    height=600,
-                                    custom_data=[df3['name']]
-                                    )
-            # Set the center point of the map and the starting zoom
-            fig.update_mapboxes(center=dict(lat=24, lon=0),
-                                zoom=0.2,
-                                )
-            fig.update_layout(showlegend=False)
-            fig.update_traces(
-                # This removed the colorbar
-                marker_coloraxis=None,
-                hovertemplate='<B>Name: </B>'
-            )
-
-            # Plot!
-            st.plotly_chart(fig, use_container_width=True, width=800, height=600)
-        with col2:
-            st.title("Mapping Information")
-            st.write(df3.head(7))
-
-
-    elif (selected_page == "Uploaded File") and (upload_file is not None):
-        with col1:
-            df4 = pd.read_excel(df_upload)
-            st.header("Drag and drop file")
-            fig = px.scatter_mapbox(df4,
-                                    lat='latitude',
-                                    lon='longitude',
-                                    color = df4['name'],
-                                    size_max=20,
-                                    width=800,
-                                    height=600,
-                                    custom_data=[df4['name']]
-                                    )
-            # Set the center point of the map and the starting zoom
-            fig.update_mapboxes(center=dict(lat=24, lon=0),
-                                zoom=0.2,
-                                )
-            fig.update_layout(showlegend=False)
-            fig.update_traces(
-                # This removed the colorbar
-                marker_coloraxis=None,
-                hovertemplate='<B>Name: </B>'
-            )
-
-            # Plot!
-            st.plotly_chart(fig, use_container_width=True, width=800, height=600)
-        with col2:
-            st.title("Mapping Information")
-            st.write(df4.head(7))
-
+        **Decision** - Select Streamlit to create our final project.
+        ''')
+        st.subheader('Project files')
+        st.markdown('This project was created using the following files:')
+        code = '''
+  project
+    ├── .env                                        # Environment files
+    ├── .streamlit                                  # Streamlit configuration files
+    │   └── config.toml                             # Streamlit configuration file
+    ├── 7wonders.csv                                # Data file for the 7 Wonders of the World
+    ├── README.md                                   # Readme file
+    ├── africanparks.csv                            # Data file for the African Game Parks
+    ├── config.yaml                                 # Database user configuration file 
+    ├── pages                                       # Page files
+    │   ├── 01_1️⃣_African_Parks.py                  # Page 1                  
+    │   ├── 02_2️⃣_Seven_Wonders_of_the_World.py     # Page 2
+    │   ├── 03_3️⃣_stocks.py                         # Page 3
+    │   └── 04_4️⃣_World_Cities.py                   # Page 4
+    ├── project.py                                  # Main project file
+    ├── requirements.txt                            # Requirements file
+    ├── test_project.py                             # Test project file                             
+    └── worldcities.csv                             # Data file for the World Cities
+            '''
+        st.code(code, language='text')
 
     # STICK A LOGOUT BUTTON IN THE SIDEBR
     authenticator.logout("Logout", "sidebar")
 
-#--- DATABASE HANDLING ---#
+
+# --- DATABASE HANDLING ---#
 # Lets just CRUD it up
 # Create our user
 def create_user(username, name, password):
     # Returns the user on a successful user creation, otherwise raises an error
     return db.put({"key": username, "name": name, "password": password})
-
 
 
 # Read our user info
@@ -270,15 +188,6 @@ def fetch_all_users():
     # returns all our users in the db
     res = db.fetch()
     return res.items
-
-def hide_dataframe_row_index():
-    hide_dataframe_row_index = """
-    <style>
-    .row_heading.level0 {display:none}
-    .blank {display:none}
-    </style>
-    """
-    return hide_dataframe_row_index
 
 
 if __name__ == '__main__':

@@ -1,0 +1,17 @@
+credentials:
+  usernames:
+    user1:
+      email: user1@gmail.com
+      name: User 1
+      password: $2b$12$vxvyvSHLP0mOSw0Ej8y3xO7OFapqHtVRVNXjpLEQP.X6vq3y3bjde
+    user2:
+      email: user2@gmail.com
+      name: User 2
+      password: $2b$12$5o6TEh0KgS/ix.N1u3kn1.lk/gm2aGSAo.umDVMDeYVn4OmTvjDf6
+cookie:
+  expiry_days: 0
+  key: abcdef
+  name: data-explorer-cookie
+preauthorized:
+  emails:
+  - twelsh37@gmail.com

@@ -42,13 +42,25 @@ I considered the following four libraries for the GUI.
   build web based applications and dashboards. Integrates well with plotly and I haveused it before
 * Streamlit - https://streamlit.io - Open source application Framework for developing web apps. 
 
-**Decision** - Select Dash/Plotly to create our final project.
+**Decision** - Select Streamlit to create our final project.
 
 ### **Project files**
-project.py - Main application file that runs our dashboard.<br>
-test_project.py - Pytest file containing our unit tests.<br>
-README.md - The project readme file.<br>
-requirements.txt - list of our pip installable libraries used in this project.<br>
-7wonders.csv - File containing our 7 wonders of the ancient world data in a csv file.<br>
-africanparks.csv - File containing co ordinates of a selection of African national Parks, lakes and forests.<br>
-worldcities.csv - File containint the 100 most populous cities in the world.
+```text
+  project
+    ├── .env                                       # Environment files
+    ├── .streamlit                                 # Streamlit configuration files
+    │   └── config.toml                            # Streamlit configuration file
+    ├── 7wonders.csv                               # Data file for the 7 Wonders of the World
+    ├── README.md                                  # Readme file
+    ├── africanparks.csv                           # Data file for the African Game Parks
+    ├── config.yaml                                # Database user configuration file 
+    ├── pages                                      # Page files
+    │   ├── 01_1️⃣_African_Parks.py                 # Page 1                  
+    │   ├── 02_2️⃣_Seven_Wonders_of_the_World.py    # Page 2
+    │   ├── 03_3️⃣_stocks.py                        # Page 3
+    │   └── 04_4️⃣_World_Cities.py                  # Page 4
+    ├── project.py                                 # Main project file
+    ├── requirements.txt                           # Requirements file
+    ├── test_project.py                            # Test project file                             
+    └── worldcities.csv                            # Data file for the World Cities
+```
