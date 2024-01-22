@@ -2,19 +2,19 @@
 #### Video Demo:  <URL HERE>
 #### Description:
 
-This is my final project submission for Harvard Universitys CS50P.
+This is my final project submission for Harvard University CS50P.
 The application utilises an open-source application framework for building the web application. <br>
-The application is frontended by a login page where only authorised users can gain access to the main application.
+The application is front-ended by a login page where only authorised users can gain access to the main application.
 The login page is back-ended to the [Deta Base NoSQL database](https://www.deta.sh/), which is used to store our user credentials.<br> 
-When the ur gains access to the main application Area they are presented with an opening page displaying a stock ticker for user selectable instraments, Some metric boxes for teh associated ticker symbols.<br>
-There are then other selectable options available in the side bar that will allow the user to display different information.<br>
+When the user gains access to the main application area, they are presented with an opening page displaying a stock ticker for user-selectable instruments and some metric boxes for the associated ticker symbols.<br>
+There are then other selectable options available in the sidebar that will allow the user to display different information.<br>
 
 Examples of this kind of data are
 * 7 Wonders of The World
 * A selection of African Game Parks
 * The 100 most populous cities on Earth
 
-Below is the data for the 7 wonders of the world which will be plotted on a digital map.<br>
+Below is the data for the 7 wonders of the world, which will be plotted on a digital map.<br>
 The locations are as follows:
 #### _The 7 Wonders of the Ancient World_
 | **Name**                         	| **Country** 	| **Latitude**           	| **Longitude**          	|
@@ -30,7 +30,7 @@ Source: https://blog.batchgeo.com/seven-wonders-of-the-world-more-like-46-wonder
 
 ### Design Decisions
 Having decided that my project was going to be an gui app of some kind i wanted to use a sutible medium to sisplay this on. 
-A Gui type interface was my first choice.
+A Gui-type interface was my first choice.
 
 I considered the following four libraries for the GUI.
 * Kivy - https://github.com/kivy/kivy - I discarded this as it seemed more
@@ -38,8 +38,8 @@ I considered the following four libraries for the GUI.
 * Tkinter - https://docs.python.org/3/library/tkinter.html - The grandad of
   the Python GUI frameworks. This turned out to be hard to test with pytest
   so I discounted it.
-* Dash/Plotly - https://plotly.com/dash/ - A modern day gui tool used to
-  build web based applications and dashboards. Integrates well with plotly and I haveused it before
+* Dash/Plotly - https://plotly.com/dash/ - A modern-day gui tool used to
+  build web-based applications and dashboards. Integrates well with plotly, and I have used it before
 * Streamlit - https://streamlit.io - Open source application Framework for developing web apps. 
 
 **Decision** - Select Streamlit to create our final project.
